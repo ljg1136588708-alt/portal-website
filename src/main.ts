@@ -4,10 +4,11 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
 import router from './router'
+import i18n from './i18n'
 import App from './App.vue'
 import './assets/styles/global.css'
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
-createApp(App).use(pinia).use(router).use(Antd).mount('#app')
+createApp(App).use(pinia).use(router).use(Antd).use(i18n).mount('#app')
