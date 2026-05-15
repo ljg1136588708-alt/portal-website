@@ -73,16 +73,10 @@ function toggleLang() {
 
     <!-- Features -->
     <section class="features">
-      <div class="features-inner">
+      <div class="section-inner">
         <div class="section-label">{{ t('features.label') }}</div>
         <h2 class="section-title">{{ t('features.title') }}</h2>
         <div class="cards">
-          <div class="card">
-            <div class="card-icon">🪺</div>
-            <h3>TabNest</h3>
-            <p>{{ t('features.tabnest.desc') }}</p>
-            <div class="card-tag">{{ t('features.tabnest.tag') }}</div>
-          </div>
           <div class="card card-highlight">
             <div class="card-icon">🔒</div>
             <h3>{{ t('features.privacy.title') }}</h3>
@@ -94,6 +88,48 @@ function toggleLang() {
             <h3>{{ t('features.lightweight.title') }}</h3>
             <p>{{ t('features.lightweight.desc') }}</p>
             <div class="card-tag">{{ t('features.lightweight.tag') }}</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎁</div>
+            <h3>{{ t('features.free.title') }}</h3>
+            <p>{{ t('features.free.desc') }}</p>
+            <div class="card-tag">{{ t('features.free.tag') }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Extensions -->
+    <section class="extensions">
+      <div class="section-inner">
+        <div class="section-label">{{ t('extensions.label') }}</div>
+        <h2 class="section-title">{{ t('extensions.title') }}</h2>
+        <div class="ext-cards">
+          <div class="ext-card">
+            <div class="ext-card-top">
+              <div class="ext-icon">🪺</div>
+              <div class="ext-info">
+                <h3>TabNest</h3>
+                <div class="card-tag">{{ t('extensions.tabnest.tag') }}</div>
+              </div>
+            </div>
+            <p>{{ t('extensions.tabnest.desc') }}</p>
+            <a class="ext-link" href="https://chromewebstore.google.com/detail/tabnest/ggibbibccmhcmkhohkcchcflcibgmkgi" target="_blank">
+              {{ t('extensions.getChrome') }}
+            </a>
+          </div>
+          <div class="ext-card ext-card-featured">
+            <div class="ext-card-top">
+              <div class="ext-icon">🔇</div>
+              <div class="ext-info">
+                <h3>Silent Mode</h3>
+                <div class="card-tag">{{ t('extensions.silentmode.tag') }}</div>
+              </div>
+            </div>
+            <p>{{ t('extensions.silentmode.desc') }}</p>
+            <a class="ext-link" href="https://chromewebstore.google.com" target="_blank">
+              {{ t('extensions.getChrome') }}
+            </a>
           </div>
         </div>
       </div>
@@ -272,11 +308,51 @@ function toggleLang() {
 .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.4); letter-spacing: 0.04em; }
 .stat-divider { width: 1px; height: 48px; background: rgba(255,255,255,0.08); }
 
-/* Features */
-.features { padding: 100px 24px; }
-.features-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+/* Shared section layout */
+.section-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
 .section-label { font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6366f1; margin-bottom: 16px; }
 .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; color: #fff; letter-spacing: -0.03em; margin-bottom: 60px; }
+
+/* Extensions */
+.extensions { padding: 80px 24px 100px; border-top: 1px solid rgba(255,255,255,0.06); }
+.ext-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 24px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.ext-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 36px 32px;
+  text-align: left;
+  transition: border-color 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ext-card:hover { border-color: rgba(99,102,241,0.35); transform: translateY(-4px); }
+.ext-card-featured { background: rgba(99,102,241,0.06); border-color: rgba(99,102,241,0.25); }
+.ext-card-top { display: flex; align-items: center; gap: 16px; }
+.ext-icon { font-size: 2.2rem; flex-shrink: 0; }
+.ext-info { display: flex; flex-direction: column; gap: 8px; }
+.ext-info h3 { font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0; }
+.ext-card > p { font-size: 0.9rem; line-height: 1.75; color: rgba(255,255,255,0.45); margin: 0; flex: 1; }
+.ext-link {
+  display: inline-block;
+  color: #a5b4fc;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+  margin-top: 4px;
+}
+.ext-link:hover { color: #fff; }
+
+/* Features */
+.features { padding: 80px 24px 100px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 36px 32px; text-align: left; transition: border-color 0.2s, transform 0.2s; }
 .card:hover { border-color: rgba(99,102,241,0.3); transform: translateY(-4px); }

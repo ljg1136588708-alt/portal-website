@@ -19,22 +19,36 @@ export default {
     freeNum: 'Free',
     free: 'Always',
   },
-  features: {
-    label: 'What we build',
-    title: 'Extensions that respect you',
+  extensions: {
+    label: 'Our Extensions',
+    title: 'Tools built for real workflows',
+    getChrome: 'Get on Chrome →',
     tabnest: {
       desc: 'Save all your open tabs with one click. Restore them anytime — individually or all at once. Stay organized, stay focused.',
       tag: 'Tab Management',
     },
+    silentmode: {
+      desc: 'Mute all tabs instantly, or silence only the ones making noise. One click, zero hassle. Take back control of your audio.',
+      tag: 'Audio Control',
+    },
+  },
+  features: {
+    label: 'Why choose us',
+    title: 'Extensions that respect you',
     privacy: {
       title: 'Privacy by Default',
       desc: 'Every extension we build stores data locally on your device. No servers, no tracking, no analytics. Your data is yours.',
       tag: 'Core Principle',
     },
     lightweight: {
-      title: 'Lightweight',
+      title: 'Lightweight & Fast',
       desc: 'No bloat, no unnecessary permissions. Each tool is built to do one thing exceptionally well without slowing you down.',
       tag: 'Performance',
+    },
+    free: {
+      title: 'Always Free',
+      desc: 'All extensions are completely free with no hidden costs, no subscriptions, and no account required. Install and use instantly.',
+      tag: 'No Cost',
     },
   },
   cta: {
