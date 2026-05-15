@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    open: true,
+    open: true,// 启动，自动跳转到浏览器
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
