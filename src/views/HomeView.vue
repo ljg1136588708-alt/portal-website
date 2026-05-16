@@ -1,11 +1,24 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { supabase } from '@/lib/supabase'
 
 const { t, locale } = useI18n()
+const userEmail = ref('')
+
+onMounted(async () => {
+  const { data } = await supabase.auth.getUser()
+  userEmail.value = data.user?.email || ''
+})
 
 function toggleLang() {
   locale.value = locale.value === 'en' ? 'zh' : 'en'
   localStorage.setItem('locale', locale.value)
+}
+
+async function signOut() {
+  await supabase.auth.signOut()
+  userEmail.value = ''
 }
 </script>
 
@@ -16,6 +29,13 @@ function toggleLang() {
       <div class="nav-inner">
         <div class="logo">Tom Liu</div>
         <div class="nav-links">
+          <template v-if="userEmail">
+            <span class="nav-user">{{ userEmail }}</span>
+            <button class="nav-signout" @click="signOut">{{ locale === 'en' ? 'Sign Out' : '退出登录' }}</button>
+          </template>
+          <template v-else>
+            <a class="nav-login" href="/login">{{ locale === 'en' ? 'Sign In' : '登录' }}</a>
+          </template>
           <button class="lang-btn" @click="toggleLang">
             {{ locale === 'en' ? 'ZH' : 'EN' }}
           </button>
@@ -220,6 +240,29 @@ function toggleLang() {
   transition: background 0.2s;
 }
 .lang-btn:hover { background: rgba(99,102,241,0.25); }
+.nav-login {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-login:hover { color: #fff; }
+.nav-user {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-signout {
+  background: none; border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem; cursor: pointer;
+  transition: color 0.2s; padding: 0;
+}
+.nav-signout:hover { color: #fff; }
 
 /* Hero */
 .hero {
