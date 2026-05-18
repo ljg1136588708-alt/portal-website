@@ -6,11 +6,13 @@ import { supabase } from '@/lib/supabase'
 const { t, locale } = useI18n()
 const userEmail = ref('')
 const userName = ref('')
+const avatarUrl = ref('')
 
 onMounted(async () => {
   const { data } = await supabase.auth.getUser()
   userEmail.value = data.user?.email || ''
   userName.value = data.user?.user_metadata?.username || ''
+  avatarUrl.value = data.user?.user_metadata?.avatar_url || ''
 })
 
 function toggleLang() {
@@ -22,6 +24,7 @@ async function signOut() {
   await supabase.auth.signOut()
   userEmail.value = ''
   userName.value = ''
+  avatarUrl.value = ''
 }
 </script>
 
@@ -32,9 +35,8 @@ async function signOut() {
       <div class="nav-inner">
         <a class="logo" href="/">
           <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="9" fill="url(#lg)"/>
-            <path d="M16 4 C16.8 9.5 17.5 11.2 22.5 12 C17.5 12.8 16.8 14.5 16 20 C15.2 14.5 14.5 12.8 9.5 12 C14.5 11.2 15.2 9.5 16 4Z" fill="white"/>
-            <path d="M16 20 C16.5 23.5 17 24.8 20 25.5 C17 26.2 16.5 27.5 16 31 C15.5 27.5 15 26.2 12 25.5 C15 24.8 15.5 23.5 16 20Z" fill="white" opacity="0.6"/>
+            <rect width="32" height="32" rx="8" fill="url(#lg)"/>
+            <path d="M20 3 L8 18 L15 18 L12 29 L24 14 L17 14Z" fill="white"/>
             <defs>
               <linearGradient id="lg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
                 <stop stop-color="#4f46e5"/>
@@ -46,7 +48,13 @@ async function signOut() {
         </a>
         <div class="nav-links">
           <template v-if="userEmail">
-            <a class="nav-user" href="/profile">{{ userName || userEmail }}</a>
+            <a class="nav-user" href="/profile">
+              <div class="nav-avatar">
+                <img v-if="avatarUrl" :src="avatarUrl" class="nav-avatar-img" alt="avatar" />
+                <span v-else>{{ (userName || userEmail)?.[0]?.toUpperCase() }}</span>
+              </div>
+              {{ userName || userEmail }}
+            </a>
             <button class="nav-signout" @click="signOut">{{ locale === 'en' ? 'Sign Out' : '退出登录' }}</button>
           </template>
           <template v-else>
@@ -221,8 +229,6 @@ async function signOut() {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 .nav-inner {
-  max-width: 1100px;
-  margin: 0 auto;
   width: 100%;
   display: flex;
   align-items: center;
@@ -269,7 +275,17 @@ async function signOut() {
   transition: color 0.2s;
 }
 .nav-login:hover { color: #fff; }
+.nav-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700; color: #fff;
+  flex-shrink: 0; overflow: hidden;
+}
+.nav-avatar-img { width: 100%; height: 100%; object-fit: cover; }
 .nav-user {
+  display: flex; align-items: center; gap: 7px;
   font-size: 0.85rem;
   color: rgba(255,255,255,0.7);
   max-width: 160px;

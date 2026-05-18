@@ -55,14 +55,23 @@ async function handleAvatarUpload(e: Event) {
     showMsg(locale.value === 'zh' ? '请选择图片文件。' : 'Please select an image file.', 'error')
     return
   }
+  if (file.size > 5 * 1024 * 1024) {
+    showMsg(locale.value === 'zh' ? '图片不能超过 5 MB。' : 'Image must be under 5 MB.', 'error')
+    return
+  }
   avatarLoading.value = true
-  const ext = file.name.split('.').pop()
+  const ext = file.name.split('.').pop() || 'png'
   const path = `${userId.value}/avatar.${ext}`
+
+  // 先删除旧文件，再上传（避免 upsert 权限问题）
+  await supabase.storage.from('avatars').remove([path])
+
   const { error: uploadError } = await supabase.storage
     .from('avatars')
-    .upload(path, file, { upsert: true })
+    .upload(path, file, { contentType: file.type, cacheControl: '0' })
   if (uploadError) {
-    showMsg(locale.value === 'zh' ? '上传失败，请重试。' : 'Upload failed, please try again.', 'error')
+    console.error('Upload error:', uploadError.message, uploadError)
+    showMsg(uploadError.message || (locale.value === 'zh' ? '上传失败，请重试。' : 'Upload failed.'), 'error')
     avatarLoading.value = false
     return
   }
@@ -134,9 +143,8 @@ async function signOut() {
     <nav class="nav">
       <a class="logo" href="/">
         <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-          <rect width="32" height="32" rx="9" fill="url(#lg2)"/>
-          <path d="M16 4 C16.8 9.5 17.5 11.2 22.5 12 C17.5 12.8 16.8 14.5 16 20 C15.2 14.5 14.5 12.8 9.5 12 C14.5 11.2 15.2 9.5 16 4Z" fill="white"/>
-          <path d="M16 20 C16.5 23.5 17 24.8 20 25.5 C17 26.2 16.5 27.5 16 31 C15.5 27.5 15 26.2 12 25.5 C15 24.8 15.5 23.5 16 20Z" fill="white" opacity="0.6"/>
+          <rect width="32" height="32" rx="8" fill="url(#lg2)"/>
+          <path d="M20 3 L8 18 L15 18 L12 29 L24 14 L17 14Z" fill="white"/>
           <defs>
             <linearGradient id="lg2" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
               <stop stop-color="#4f46e5"/>
@@ -168,6 +176,7 @@ async function signOut() {
         <div class="profile-info">
           <h1>{{ userName || (locale === 'zh' ? '未设置用户名' : 'No username') }}</h1>
           <p>{{ userEmail }}</p>
+          <p class="avatar-hint">{{ locale === 'zh' ? '点击头像更换 · 最大 5 MB' : 'Click avatar to change · Max 5 MB' }}</p>
         </div>
       </div>
 
@@ -317,6 +326,7 @@ async function signOut() {
 
 .profile-info h1 { font-size: 1.5rem; font-weight: 800; color: #fff; margin: 0 0 6px; letter-spacing: -0.03em; }
 .profile-info p { font-size: 0.88rem; color: rgba(255,255,255,0.4); margin: 0; }
+.avatar-hint { font-size: 0.78rem; color: rgba(255,255,255,0.25); margin-top: 6px !important; }
 
 .message { font-size: 0.82rem; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; }
 .message.success { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
