@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
@@ -7,16 +7,27 @@ import { supabase } from '@/lib/supabase'
 const router = useRouter()
 const { locale } = useI18n()
 
-const mode = ref<'login' | 'register' | 'forgot'>('login')
+const mode = ref<'login' | 'register' | 'forgot' | 'reset'>('login')
 const loading = ref(false)
 const googleLoading = ref(false)
 const showPassword = ref(false)
+const showNewPassword = ref(false)
 const message = ref('')
 const messageType = ref<'success' | 'error'>('')
 
 const form = reactive({
   email: '',
   password: '',
+  newPassword: '',
+})
+
+onMounted(() => {
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      mode.value = 'reset'
+      message.value = ''
+    }
+  })
 })
 
 function toggleLang() {
@@ -130,11 +141,44 @@ async function handleForgot() {
   })
   loading.value = false
   if (error) {
-    message.value = locale.value === 'zh' ? '发送失败，请稍后再试。' : 'Failed to send, please try again.'
+    const msg = error.message || ''
+    if (msg.includes('rate limit')) {
+      message.value = locale.value === 'zh' ? '发送过于频繁，请稍后再试。' : 'Too many requests, please try again later.'
+    } else if (msg.includes('invalid') || msg.includes('format')) {
+      message.value = locale.value === 'zh' ? '邮箱格式不正确。' : 'Invalid email address.'
+    } else {
+      message.value = locale.value === 'zh' ? '发送失败，请稍后再试。' : 'Failed to send, please try again.'
+    }
     messageType.value = 'error'
   } else {
     message.value = locale.value === 'zh' ? '重置邮件已发送，请查收邮箱。' : 'Reset email sent, please check your inbox.'
     messageType.value = 'success'
+  }
+}
+
+async function handleReset() {
+  const pwdError = validatePassword(form.newPassword)
+  if (pwdError) {
+    message.value = pwdError
+    messageType.value = 'error'
+    return
+  }
+  loading.value = true
+  message.value = ''
+  const { error } = await supabase.auth.updateUser({ password: form.newPassword })
+  loading.value = false
+  if (error) {
+    message.value = locale.value === 'zh' ? '设置失败，请重新操作。' : 'Failed to reset password, please try again.'
+    messageType.value = 'error'
+  } else {
+    message.value = locale.value === 'zh' ? '密码已更新，正在跳转登录...' : 'Password updated! Redirecting...'
+    messageType.value = 'success'
+    setTimeout(() => {
+      supabase.auth.signOut()
+      mode.value = 'login'
+      message.value = ''
+      form.newPassword = ''
+    }, 2000)
   }
 }
 
@@ -180,6 +224,37 @@ async function handleGoogle() {
         <h1>{{ mode === 'login' ? (locale === 'zh' ? '欢迎回来' : 'Welcome back') : mode === 'register' ? (locale === 'zh' ? '创建账号' : 'Create account') : (locale === 'zh' ? '重置密码' : 'Reset Password') }}</h1>
         <p>{{ mode === 'login' ? (locale === 'zh' ? '登录你的账号继续使用' : 'Sign in to your account to continue') : mode === 'register' ? (locale === 'zh' ? '注册开始使用我们的服务' : 'Sign up to get started') : (locale === 'zh' ? '输入邮箱，我们将发送重置链接' : 'Enter your email to receive a reset link') }}</p>
       </div>
+
+      <!-- 重置密码模式 -->
+      <template v-if="mode === 'reset'">
+        <div class="field">
+          <label>{{ locale === 'zh' ? '设置新密码' : 'New Password' }}</label>
+          <div class="input-wrap">
+            <input
+              v-model="form.newPassword"
+              :type="showNewPassword ? 'text' : 'password'"
+              :placeholder="locale === 'zh' ? '请输入新密码' : 'Enter new password'"
+              minlength="8"
+              maxlength="20"
+            />
+            <button type="button" class="eye-btn" @click="showNewPassword = !showNewPassword">
+              <svg v-if="!showNewPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <div class="field-hint">{{ locale === 'zh' ? '8-20位，需包含字母和数字' : '8-20 characters, letters and numbers required' }}</div>
+        </div>
+        <div v-if="message" class="message" :class="messageType">{{ message }}</div>
+        <button class="btn-primary" :disabled="loading" @click="handleReset">
+          {{ loading ? '...' : (locale === 'zh' ? '确认设置新密码' : 'Set New Password') }}
+        </button>
+      </template>
 
       <!-- 忘记密码模式 -->
       <template v-if="mode === 'forgot'">
