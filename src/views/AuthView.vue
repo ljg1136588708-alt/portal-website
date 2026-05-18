@@ -22,6 +22,12 @@ const form = reactive({
 })
 
 onMounted(() => {
+  // 检测 URL hash 里是否有 recovery token（邮件链接带过来的）
+  const hash = window.location.hash
+  if (hash.includes('type=recovery')) {
+    mode.value = 'reset'
+  }
+
   supabase.auth.onAuthStateChange((event) => {
     if (event === 'PASSWORD_RECOVERY') {
       mode.value = 'reset'
