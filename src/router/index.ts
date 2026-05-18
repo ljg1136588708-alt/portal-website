@@ -47,10 +47,14 @@ export function updateDocTitle(routeMeta: any) {
 
 router.beforeEach(async (to) => {
   updateDocTitle(to.meta)
-  if (to.meta.requiresAuth) {
-    const { data } = await supabase.auth.getSession()
-    if (!data.session) return '/login'
-  }
+  const { data } = await supabase.auth.getSession()
+  const loggedIn = !!data.session
+
+  // 已登录用户访问登录页，直接跳首页
+  if (to.path === '/login' && loggedIn) return '/'
+
+  // 需要登录的页面，未登录跳登录页
+  if (to.meta.requiresAuth && !loggedIn) return '/login'
 })
 
 export default router
