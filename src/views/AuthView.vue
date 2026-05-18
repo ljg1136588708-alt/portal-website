@@ -168,7 +168,13 @@ async function handleReset() {
   const { error } = await supabase.auth.updateUser({ password: form.newPassword })
   loading.value = false
   if (error) {
-    message.value = locale.value === 'zh' ? '设置失败，请重新操作。' : 'Failed to reset password, please try again.'
+    console.error('updateUser error:', error)
+    const msg = error.message || ''
+    if (msg.includes('expired') || msg.includes('invalid')) {
+      message.value = locale.value === 'zh' ? '链接已过期，请重新发送重置邮件。' : 'Link expired, please request a new reset email.'
+    } else {
+      message.value = locale.value === 'zh' ? `设置失败：${error.message}` : `Failed: ${error.message}`
+    }
     messageType.value = 'error'
   } else {
     message.value = locale.value === 'zh' ? '密码已更新，正在跳转登录...' : 'Password updated! Redirecting...'
@@ -272,7 +278,7 @@ async function handleGoogle() {
       </template>
 
       <!-- 登录/注册模式 -->
-      <template v-else>
+      <template v-if="mode === 'login' || mode === 'register'">
         <!-- Google Button -->
         <button class="btn-google" :disabled="googleLoading" @click="handleGoogle">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
