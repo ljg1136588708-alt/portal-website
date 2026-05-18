@@ -173,7 +173,7 @@ async function signOut() {
               </div>
             </div>
             <p>{{ t('extensions.tabnest.desc') }}</p>
-            <a class="ext-link" href="https://chromewebstore.google.com/detail/tabnest/ggibbibccmhcmkhohkcchcflcibgmkgi" target="_blank">
+            <a class="ext-link" href="https://chromewebstore.google.com/detail/tabnest/lcfnhbbkaejlbombkbkappbckgbijadc" target="_blank">
               {{ t('extensions.getChrome') }}
             </a>
           </div>

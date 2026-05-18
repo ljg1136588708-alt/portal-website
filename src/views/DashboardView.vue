@@ -102,7 +102,7 @@ function toggleLang() {
             <h3>TabNest</h3>
             <p>{{ locale === 'zh' ? '一键保存标签页' : 'Save tabs with one click' }}</p>
           </div>
-          <a href="https://chromewebstore.google.com/detail/tabnest/ggibbibccmhcmkhohkcchcflcibgmkgi" target="_blank" class="card-link">
+          <a href="https://chromewebstore.google.com/detail/tabnest/lcfnhbbkaejlbombkbkappbckgbijadc" target="_blank" class="card-link">
             {{ locale === 'zh' ? '获取插件 →' : 'Get Extension →' }}
           </a>
         </div>
