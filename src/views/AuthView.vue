@@ -241,7 +241,19 @@ async function handleGoogle() {
     <div class="card">
       <!-- Header -->
       <div class="card-header">
-        <div class="card-icon">✦</div>
+        <div class="card-icon">
+          <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="9" fill="url(#ali)"/>
+            <path d="M16 4 C16.8 9.5 17.5 11.2 22.5 12 C17.5 12.8 16.8 14.5 16 20 C15.2 14.5 14.5 12.8 9.5 12 C14.5 11.2 15.2 9.5 16 4Z" fill="white"/>
+            <path d="M16 20 C16.5 23.5 17 24.8 20 25.5 C17 26.2 16.5 27.5 16 31 C15.5 27.5 15 26.2 12 25.5 C15 24.8 15.5 23.5 16 20Z" fill="white" opacity="0.6"/>
+            <defs>
+              <linearGradient id="ali" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4f46e5"/>
+                <stop offset="1" stop-color="#7c3aed"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <h1>{{ mode === 'login' ? (locale === 'zh' ? '欢迎回来' : 'Welcome back') : mode === 'register' ? (locale === 'zh' ? '创建账号' : 'Create account') : (locale === 'zh' ? '重置密码' : 'Reset Password') }}</h1>
         <p>{{ mode === 'login' ? (locale === 'zh' ? '登录你的账号继续使用' : 'Sign in to your account to continue') : mode === 'register' ? (locale === 'zh' ? '注册开始使用我们的服务' : 'Sign up to get started') : (locale === 'zh' ? '输入邮箱，我们将发送重置链接' : 'Enter your email to receive a reset link') }}</p>
       </div>
@@ -458,8 +470,8 @@ async function handleGoogle() {
 
 .card-header { text-align: center; margin-bottom: 32px; }
 .card-icon {
-  font-size: 1.5rem; color: #6366f1;
-  margin-bottom: 16px; display: block;
+  margin-bottom: 16px;
+  display: flex; justify-content: center;
 }
 .card-header h1 {
   font-size: 1.6rem; font-weight: 800;

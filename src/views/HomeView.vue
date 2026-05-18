@@ -31,13 +31,14 @@ async function signOut() {
     <nav class="nav">
       <div class="nav-inner">
         <a class="logo" href="/">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <rect width="28" height="28" rx="8" fill="url(#lg)"/>
-            <path d="M8 10h5v8H8zM15 10h5l-2.5 4 2.5 4h-5l2.5-4z" fill="white" opacity="0.9"/>
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="9" fill="url(#lg)"/>
+            <path d="M16 4 C16.8 9.5 17.5 11.2 22.5 12 C17.5 12.8 16.8 14.5 16 20 C15.2 14.5 14.5 12.8 9.5 12 C14.5 11.2 15.2 9.5 16 4Z" fill="white"/>
+            <path d="M16 20 C16.5 23.5 17 24.8 20 25.5 C17 26.2 16.5 27.5 16 31 C15.5 27.5 15 26.2 12 25.5 C15 24.8 15.5 23.5 16 20Z" fill="white" opacity="0.6"/>
             <defs>
-              <linearGradient id="lg" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#6366f1"/>
-                <stop offset="1" stop-color="#8b5cf6"/>
+              <linearGradient id="lg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4f46e5"/>
+                <stop offset="1" stop-color="#7c3aed"/>
               </linearGradient>
             </defs>
           </svg>
