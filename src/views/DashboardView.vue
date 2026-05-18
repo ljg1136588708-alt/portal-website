@@ -1,21 +1,35 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
-import type { User } from '@supabase/supabase-js'
+import { updateDocTitle } from '@/router'
 
 const router = useRouter()
 const { locale } = useI18n()
-const user = ref<User | null>(null)
+const userEmail = ref('')
+const userName = ref('')
+const avatarUrl = ref('')
+
+function syncUser(user: any) {
+  userEmail.value = user?.email || ''
+  userName.value = user?.user_metadata?.username || ''
+  avatarUrl.value = user?.user_metadata?.avatar_url || ''
+}
+
+let authListener: { data: { subscription: { unsubscribe: () => void } } } | null = null
 
 onMounted(async () => {
   const { data } = await supabase.auth.getUser()
-  if (!data.user) {
-    router.push('/login')
-    return
-  }
-  user.value = data.user
+  if (!data.user) { router.push('/login'); return }
+  syncUser(data.user)
+  authListener = supabase.auth.onAuthStateChange((_event, session) => {
+    syncUser(session?.user ?? null)
+  })
+})
+
+onUnmounted(() => {
+  authListener?.data.subscription.unsubscribe()
 })
 
 async function signOut() {
@@ -26,6 +40,7 @@ async function signOut() {
 function toggleLang() {
   locale.value = locale.value === 'en' ? 'zh' : 'en'
   localStorage.setItem('locale', locale.value)
+  updateDocTitle({ title: 'Dashboard', titleZh: '控制台' })
 }
 </script>
 
@@ -37,7 +52,19 @@ function toggleLang() {
     </div>
 
     <nav class="nav">
-      <a class="logo" href="/">Tom Liu</a>
+      <a class="logo" href="/">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#dlg)"/>
+          <path d="M20 3 L8 18 L15 18 L12 29 L24 14 L17 14Z" fill="white"/>
+          <defs>
+            <linearGradient id="dlg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4f46e5"/>
+              <stop offset="1" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Tom Liu</span>
+      </a>
       <div class="nav-right">
         <button class="lang-btn" @click="toggleLang">{{ locale === 'en' ? 'ZH' : 'EN' }}</button>
         <button class="btn-signout" @click="signOut">
@@ -48,10 +75,13 @@ function toggleLang() {
 
     <div class="content">
       <div class="welcome-card">
-        <div class="avatar">{{ user?.email?.[0]?.toUpperCase() || '?' }}</div>
+        <div class="avatar-wrap">
+          <img v-if="avatarUrl" :src="avatarUrl" class="avatar-img" alt="avatar" />
+          <div v-else class="avatar-default">{{ (userName || userEmail)?.[0]?.toUpperCase() || '?' }}</div>
+        </div>
         <div class="welcome-text">
           <h1>{{ locale === 'zh' ? '欢迎回来 👋' : 'Welcome back 👋' }}</h1>
-          <p>{{ user?.email }}</p>
+          <p>{{ userName || userEmail }}</p>
         </div>
       </div>
 
@@ -104,7 +134,8 @@ function toggleLang() {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-.logo { font-size: 1.1rem; font-weight: 700; color: #fff; text-decoration: none; }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700; color: #fff; text-decoration: none; }
+.logo span { color: #fff; }
 .nav-right { display: flex; align-items: center; gap: 12px; }
 .lang-btn {
   background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
@@ -127,12 +158,16 @@ function toggleLang() {
   display: flex; align-items: center; gap: 20px;
   margin-bottom: 48px;
 }
-.avatar {
+.avatar-wrap {
   width: 64px; height: 64px; border-radius: 50%;
+  flex-shrink: 0; overflow: hidden;
+}
+.avatar-img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-default {
+  width: 100%; height: 100%; border-radius: 50%;
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.6rem; font-weight: 700; color: #fff;
-  flex-shrink: 0;
 }
 .welcome-text h1 {
   font-size: 1.8rem; font-weight: 800; color: #fff;
