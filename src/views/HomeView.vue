@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
 
@@ -8,11 +8,26 @@ const userEmail = ref('')
 const userName = ref('')
 const avatarUrl = ref('')
 
+function syncUser(user: any) {
+  userEmail.value = user?.email || ''
+  userName.value = user?.user_metadata?.username || ''
+  avatarUrl.value = user?.user_metadata?.avatar_url || ''
+}
+
+let authListener: { data: { subscription: { unsubscribe: () => void } } } | null = null
+
 onMounted(async () => {
   const { data } = await supabase.auth.getUser()
-  userEmail.value = data.user?.email || ''
-  userName.value = data.user?.user_metadata?.username || ''
-  avatarUrl.value = data.user?.user_metadata?.avatar_url || ''
+  syncUser(data.user)
+
+  // 监听用户信息变更（修改用户名/头像后实时同步）
+  authListener = supabase.auth.onAuthStateChange((_event, session) => {
+    syncUser(session?.user ?? null)
+  })
+})
+
+onUnmounted(() => {
+  authListener?.data.subscription.unsubscribe()
 })
 
 function toggleLang() {
