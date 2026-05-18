@@ -12,6 +12,7 @@ const userName = ref('')
 const avatarUrl = ref('')
 const userId = ref('')
 
+const isOAuthUser = ref(false)
 const editingName = ref(false)
 const newName = ref('')
 
@@ -34,6 +35,9 @@ onMounted(async () => {
   userName.value = data.user.user_metadata?.username || ''
   avatarUrl.value = data.user.user_metadata?.avatar_url || ''
   newName.value = userName.value
+  // 检测是否为 OAuth 用户（Google 等），OAuth 用户无法修改密码
+  const provider = data.user.app_metadata?.provider
+  isOAuthUser.value = provider === 'google' || provider === 'github'
 })
 
 function toggleLang() {
@@ -214,7 +218,7 @@ async function signOut() {
       </div>
 
       <!-- 修改密码 -->
-      <div class="profile-card">
+      <div class="profile-card" v-if="!isOAuthUser">
         <div class="card-title-row">
           <h2>{{ locale === 'zh' ? '账号安全' : 'Security' }}</h2>
           <button v-if="!changingPassword" class="edit-btn" @click="changingPassword = true">
@@ -255,6 +259,16 @@ async function signOut() {
             <button class="cancel-btn" @click="changingPassword = false; newPassword = ''; confirmPassword = ''">{{ locale === 'zh' ? '取消' : 'Cancel' }}</button>
           </div>
         </template>
+      </div>
+
+      <!-- OAuth 用户提示 -->
+      <div class="profile-card oauth-tip" v-if="isOAuthUser">
+        <h2>{{ locale === 'zh' ? '账号安全' : 'Security' }}</h2>
+        <p class="oauth-msg">
+          {{ locale === 'zh'
+            ? '你通过 Google 登录，密码由 Google 管理，无法在此修改。'
+            : 'You signed in with Google. Your password is managed by Google.' }}
+        </p>
       </div>
 
       <a href="/" class="back-link">← {{ locale === 'zh' ? '返回首页' : 'Back to Home' }}</a>
@@ -357,6 +371,9 @@ async function signOut() {
 .input-wrap .edit-input { padding-right: 40px; }
 .eye-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6366f1; cursor: pointer; padding: 0; display: flex; align-items: center; }
 .eye-btn:hover { color: #a5b4fc; }
+
+.oauth-tip { opacity: 0.7; }
+.oauth-msg { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin: 0; }
 
 .back-link { display: inline-block; color: rgba(255,255,255,0.35); font-size: 0.85rem; text-decoration: none; transition: color 0.2s; }
 .back-link:hover { color: #fff; }
