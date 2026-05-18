@@ -13,7 +13,7 @@ const googleLoading = ref(false)
 const showPassword = ref(false)
 const showNewPassword = ref(false)
 const message = ref('')
-const messageType = ref<'success' | 'error'>('')
+const messageType = ref<'success' | 'error' | ''>('')
 
 const form = reactive({
   email: '',
