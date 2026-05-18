@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { supabase } from '@/lib/supabase'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -38,8 +39,12 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   document.title = (to.meta.title as string) || 'Portal'
+  if (to.meta.requiresAuth) {
+    const { data } = await supabase.auth.getSession()
+    if (!data.session) return '/login'
+  }
 })
 
 export default router

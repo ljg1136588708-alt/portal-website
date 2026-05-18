@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
@@ -22,19 +22,23 @@ const form = reactive({
   username: '',
 })
 
+let authListener: { data: { subscription: { unsubscribe: () => void } } } | null = null
+
 onMounted(() => {
-  // 检测 URL hash 里是否有 recovery token（邮件链接带过来的）
   const hash = window.location.hash
   if (hash.includes('type=recovery')) {
     mode.value = 'reset'
   }
-
-  supabase.auth.onAuthStateChange((event) => {
+  authListener = supabase.auth.onAuthStateChange((event) => {
     if (event === 'PASSWORD_RECOVERY') {
       mode.value = 'reset'
       message.value = ''
     }
   })
+})
+
+onUnmounted(() => {
+  authListener?.data.subscription.unsubscribe()
 })
 
 function toggleLang() {

@@ -175,7 +175,6 @@ async function signOut() {
         </div>
         <div class="profile-info">
           <h1>{{ userName || (locale === 'zh' ? '未设置用户名' : 'No username') }}</h1>
-          <p>{{ userEmail }}</p>
           <p class="avatar-hint">{{ locale === 'zh' ? '点击头像更换 · 最大 5 MB' : 'Click avatar to change · Max 5 MB' }}</p>
         </div>
       </div>
