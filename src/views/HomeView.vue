@@ -5,10 +5,12 @@ import { supabase } from '@/lib/supabase'
 
 const { t, locale } = useI18n()
 const userEmail = ref('')
+const userName = ref('')
 
 onMounted(async () => {
   const { data } = await supabase.auth.getUser()
   userEmail.value = data.user?.email || ''
+  userName.value = data.user?.user_metadata?.username || ''
 })
 
 function toggleLang() {
@@ -19,6 +21,7 @@ function toggleLang() {
 async function signOut() {
   await supabase.auth.signOut()
   userEmail.value = ''
+  userName.value = ''
 }
 </script>
 
@@ -27,10 +30,22 @@ async function signOut() {
     <!-- Nav -->
     <nav class="nav">
       <div class="nav-inner">
-        <div class="logo">Tom Liu</div>
+        <a class="logo" href="/">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect width="28" height="28" rx="8" fill="url(#lg)"/>
+            <path d="M8 10h5v8H8zM15 10h5l-2.5 4 2.5 4h-5l2.5-4z" fill="white" opacity="0.9"/>
+            <defs>
+              <linearGradient id="lg" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6366f1"/>
+                <stop offset="1" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Tom Liu</span>
+        </a>
         <div class="nav-links">
           <template v-if="userEmail">
-            <span class="nav-user">{{ userEmail }}</span>
+            <a class="nav-user" href="/profile">{{ userName || userEmail }}</a>
             <button class="nav-signout" @click="signOut">{{ locale === 'en' ? 'Sign Out' : '退出登录' }}</button>
           </template>
           <template v-else>
@@ -213,10 +228,15 @@ async function signOut() {
   justify-content: space-between;
 }
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 1.1rem;
   font-weight: 700;
   color: #fff;
+  text-decoration: none;
 }
+.logo span { color: #fff; }
 .nav-links {
   display: flex;
   align-items: center;
@@ -250,12 +270,15 @@ async function signOut() {
 .nav-login:hover { color: #fff; }
 .nav-user {
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.7);
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.2s;
 }
+.nav-user:hover { color: #fff; }
 .nav-signout {
   background: none; border: none;
   color: rgba(255,255,255,0.5);

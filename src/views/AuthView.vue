@@ -19,6 +19,7 @@ const form = reactive({
   email: '',
   password: '',
   newPassword: '',
+  username: '',
 })
 
 onMounted(() => {
@@ -56,6 +57,11 @@ function validatePassword(pwd: string) {
 
 async function handleSubmit() {
   if (!form.email || !form.password) return
+  if (mode.value === 'register' && !form.username.trim()) {
+    message.value = locale.value === 'zh' ? '请输入用户名。' : 'Please enter a username.'
+    messageType.value = 'error'
+    return
+  }
 
   const pwdError = validatePassword(form.password)
   if (pwdError) {
@@ -111,6 +117,9 @@ async function handleSubmit() {
       const { data, error } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
+        options: {
+          data: { username: form.username.trim() }
+        }
       })
       if (error) throw error
       // 已注册邮箱 Supabase 会返回 identities 为空数组
@@ -302,6 +311,17 @@ async function handleGoogle() {
 
         <!-- Form -->
         <form @submit.prevent="handleSubmit">
+          <div v-if="mode === 'register'" class="field">
+            <label>{{ locale === 'zh' ? '用户名' : 'Username' }}</label>
+            <input
+              v-model="form.username"
+              type="text"
+              :placeholder="locale === 'zh' ? '请输入用户名' : 'Enter your username'"
+              autocomplete="username"
+              maxlength="20"
+              required
+            />
+          </div>
           <div class="field">
             <label>{{ locale === 'zh' ? '邮箱地址' : 'Email address' }}</label>
             <input
