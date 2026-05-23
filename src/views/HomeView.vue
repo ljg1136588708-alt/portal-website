@@ -186,7 +186,7 @@ async function signOut() {
               </div>
             </div>
             <p>{{ t('extensions.silentmode.desc') }}</p>
-            <a class="ext-link" href="https://chromewebstore.google.com" target="_blank">
+            <a class="ext-link" href="https://chromewebstore.google.com/detail/silent-mode/podegfdlahpnmnogbmicpdeeckchhmla" target="_blank">
               {{ t('extensions.getChrome') }}
             </a>
           </div>
