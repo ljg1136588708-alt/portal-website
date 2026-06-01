@@ -61,6 +61,14 @@ async function signOut() {
           </svg>
           <span>Tom Liu</span>
         </a>
+        <!-- 工具导航 -->
+        <div class="nav-tools">
+          <a class="nav-tool-link active" href="/tools/watermark-remover">
+            <span class="nav-tool-icon">✂️</span>
+            {{ locale === 'en' ? 'Watermark Remover' : '去水印' }}
+          </a>
+        </div>
+
         <div class="nav-links">
           <template v-if="userEmail">
             <a class="nav-user" href="/profile">
@@ -259,6 +267,38 @@ async function signOut() {
   text-decoration: none;
 }
 .logo span { color: #fff; }
+.nav-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  padding: 0 32px;
+}
+.nav-tool-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+  border: 1px solid transparent;
+}
+.nav-tool-link:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.08);
+}
+.nav-tool-link.active {
+  color: #a5b4fc;
+  background: rgba(99,102,241,0.1);
+  border-color: rgba(99,102,241,0.25);
+}
+.nav-tool-icon { font-size: 0.9rem; }
+
 .nav-links {
   display: flex;
   align-items: center;

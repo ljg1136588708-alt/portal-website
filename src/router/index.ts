@@ -33,6 +33,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/ProfileView.vue'),
     meta: { title: 'Profile', titleZh: '个人中心' },
   },
+  {
+    path: '/tools/watermark-remover',
+    name: 'WatermarkRemover',
+    component: () => import('@/views/tools/WatermarkRemoverView.vue'),
+    meta: { title: 'Watermark Remover', titleZh: '去水印' },
+  },
 ]
 
 const router = createRouter({
