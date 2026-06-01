@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n()
 
-const BACKEND = 'http://localhost:3001'
+const BACKEND = import.meta.env.VITE_API_BASE_URL
 
 const activeTab = ref<'download' | 'remove'>('download')
 const url = ref('')
